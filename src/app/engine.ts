@@ -1,42 +1,38 @@
 import { ParsedLineType } from "./parser";
-import { isNumber } from "./helpers";
-import {
-  mathOperators,
-  mathPriorities,
-  mathOperatorsPriorities,
-} from "./mathOperators";
+import { isNumber, isUnaryOperator, isBinaryOperator } from "./helpers";
+import { unaryMathOperators, binaryMathOperators } from "./mathOperators";
 
-const [FIRST, SECOND] = mathPriorities;
+export const calcByRpn = (rpnStack: ParsedLineType): number => {
+  const stack: number[] = [];
+  rpnStack.forEach((item) => {
+    if (isNumber(String(item))) {
+      stack.push(Number(item));
+      return;
+    }
 
-export const firstPrioritiesCalc = (stack: ParsedLineType): ParsedLineType =>
-  stack.reduce<ParsedLineType>((result, nextItem) => {
-    const prevItem = result[result.length - 2];
-    const item = result[result.length - 1];
-
-    if (!isNumber(String(item)) && mathOperatorsPriorities[item] === FIRST) {
-      if (!mathOperators[item]) {
-        throw new TypeError("Unexpected stack!");
+    if (isBinaryOperator(String(item))) {
+      if (stack.length < 2) {
+        throw `Error: ${rpnStack} => no enough operands for operation ${item}`;
       }
-      result = [
-        ...result.slice(0, -2),
-        mathOperators[item](Number(prevItem), Number(nextItem)),
-      ];
-    } else {
-      result.push(nextItem);
-    }
-    return result;
-  }, []);
-
-export const secondPrioritiesCalc = (stack: ParsedLineType): number =>
-  stack.reduce<number>((result, nextItem, key) => {
-    const item = stack[key - 1];
-
-    if (mathOperatorsPriorities[item] === FIRST) {
-      throw new TypeError("Unexpected stack!");
+      const second = Number(stack.pop());
+      const first = Number(stack.pop());
+      const result: number = binaryMathOperators[item](first, second);
+      stack.push(result);
     }
 
-    if (!isNumber(String(item)) && mathOperatorsPriorities[item] === SECOND) {
-      result = mathOperators[item](Number(result), Number(nextItem));
+    if (isUnaryOperator(String(item))) {
+      if (stack.length < 1) {
+        throw `Error: ${rpnStack} => no enough operands for operation ${item}`;
+      }
+      const first = Number(stack.pop());
+      const result: number = unaryMathOperators[item](Number(first));
+      stack.push(result);
     }
-    return result;
-  }, Number(stack[0]));
+  });
+
+  if (stack.length === 1) {
+    return Number(stack.pop());
+  }
+
+  throw `Error: ${rpnStack} => ${stack}`;
+};

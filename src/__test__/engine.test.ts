@@ -1,47 +1,15 @@
-import { firstPrioritiesCalc, secondPrioritiesCalc } from "../app/engine";
+import { calcByRpn } from "../app/engine";
 
-describe("firstPrioritiesCalc simple cases", () => {
-    it("[1, * 32]", () => {
-        expect(firstPrioritiesCalc([1, "*", 32])).toEqual([32]);
+describe("calcByRpn", () => {
+    it("[2] => 2", () => {
+        expect(calcByRpn([2])).toEqual(2);
     });
 
-    it("[32, /, 32]", () => {
-        expect(firstPrioritiesCalc([32, "/", 32])).toEqual([1]);
+    it("[2, 3, +] => 5", () => {
+        expect(calcByRpn([2, 3, "+"])).toEqual(5);
     });
 
-    it("[32, + 32]", () => {
-        expect(firstPrioritiesCalc([32, "+", 32])).toEqual([32, "+", 32]);
-    });
-});
-
-describe("firstPrioritiesCalc mixed with second priorities cases", () => {
-    it("[32, /, 32, +, 10, *, 10]", () => {
-        expect(firstPrioritiesCalc([32, "/", 32, "+", 10, "*", 10])).toEqual([
-            1,
-            "+",
-            100,
-        ]);
-    });
-});
-
-describe("secondPrioritiesCalc invalid cases", () => {
-    it("[32, / 32]", () => {
-        expect(() => secondPrioritiesCalc([32, "/", 32])).toThrow(
-          TypeError("Unexpected stack!")
-        );
-    });
-});
-
-describe("secondPrioritiesCalc simple cases", () => {
-    it("[32, + 32]", () => {
-        expect(secondPrioritiesCalc([32, "+", 32])).toEqual(64);
-    });
-
-    it("[32, - 32]", () => {
-        expect(secondPrioritiesCalc([32, "-", 32])).toEqual(0);
-    });
-
-    it("[32, - 32, +, 10]", () => {
-        expect(secondPrioritiesCalc([32, "-", 32, "+", 10])).toEqual(10);
+    it("[1, 2, 3, *, +] => 7", () => {
+        expect(calcByRpn([1, 2, 3, "*", "+"])).toEqual(7);
     });
 });

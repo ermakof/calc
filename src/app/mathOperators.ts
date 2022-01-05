@@ -22,13 +22,12 @@ export const minus: ScalarOperationType = (
   second: number
 ): number => first - second;
 
-export const pow: ScalarOperationType = (first, second) =>
-  Math.pow(first, second);
-
-export const factorial: FunctionOperationType = (first) =>
-  first ? first * factorial(first - 1) : 1;
-
 export type ScalarOperator = "*" | "/" | "+" | "-" | "^" | "!";
+
+export const pow: ScalarOperationType = (base, exp) => base ** exp;
+
+export const fact: UnaryScalarOperationType = (val = 1) =>
+  val ? [...Array(val).keys()].reduce((acc, curr) => acc * (curr + 1), 1) : 1;
 
 export const scalarOperators: {
   [key in ScalarOperator]: ScalarOperationType;
@@ -38,7 +37,7 @@ export const scalarOperators: {
   "+": add,
   "-": minus,
   "^": pow,
-  "!": factorial,
+  "!": fact,
 };
 export type MathOperator = ScalarOperator;
 
@@ -49,42 +48,14 @@ export const mathOperators: { [key: string]: ScalarOperationType } = {
   "-": minus,
 };
 
-export const mathPriorities: number[] = [1, 2];
-
-const [FIRST, SECOND] = mathPriorities;
-
-export const mathOperatorsPriorities: { [key: string]: number } = {
-  "*": FIRST,
-  "/": FIRST,
-  "+": SECOND,
-  "-": SECOND,
-};
-
 export const binaryMathOperators: { [key: string]: ScalarOperationType } = {
   "*": mul,
   "/": div,
   "+": add,
   "-": minus,
-};
-
-export const sqr: UnaryScalarOperationType = (first) => first * first;
-
-export const fact: UnaryScalarOperationType = (first) => {
-  let result = 1;
-  for (let i = 1; i <= first; i++) {
-    result *= i;
-  }
-  return result;
+  "^": pow,
 };
 
 export const unaryMathOperators: { [key: string]: UnaryScalarOperationType } = {
-  "**": sqr,
   "!": fact,
-};
-
-const [zero, first] = mathPriorities;
-
-export const MathPrioritiesList = {
-  zero,
-  first,
 };
