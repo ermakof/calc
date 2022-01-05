@@ -12,6 +12,7 @@ Simple console calculator
 Для запуска:
 ```
 git clone git@github.com:ermakof/calc.git
+cd calc
 npm i
 npm run calc
 
